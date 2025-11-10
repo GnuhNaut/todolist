@@ -1,3 +1,4 @@
+// src/utils/taskLogic.ts
 import { TaskTemplate } from '../types';
 import { db } from '../config/firebase';
 import {
@@ -15,7 +16,8 @@ export const getLocalDateString = (date: Date): string => {
   return localDate.toISOString().split('T')[0];
 };
 
-const doesTemplateMatchDate = (template: TaskTemplate, targetDate: Date): boolean => {
+// *** THAY ĐỔI Ở ĐÂY: Thêm 'export' ***
+export const doesTemplateMatchDate = (template: TaskTemplate, targetDate: Date): boolean => {
   const { recurrence } = template;
   const targetDateString = getLocalDateString(targetDate);
   const targetDayOfWeek = targetDate.getDay();
@@ -51,6 +53,8 @@ export const ensureTasksForDay = async (
 
   const existingInstances = await getDocs(instancesQuery);
 
+  // Lỗi logic cũ nằm ở đây. Nếu đã có 1 task, nó sẽ không tạo task mới.
+  // Chúng ta sẽ bỏ qua việc sửa hàm này và sửa logic ở Modal
   if (!existingInstances.empty) {
     return;
   }

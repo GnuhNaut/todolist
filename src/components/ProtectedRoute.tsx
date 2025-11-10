@@ -1,20 +1,21 @@
+// src/components/ProtectedRoute.tsx
 import { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-const spinnerStyle: React.CSSProperties = {
-  position: 'fixed',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  fontSize: '2rem',
-};
+// Xóa spinnerStyle cũ
 
 const ProtectedRoute = ({ children }: { children: ReactNode }) => {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return <div style={spinnerStyle}>Loading...</div>;
+    // Dùng spinner Tailwind
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        <span className="ml-4 text-xl font-semibold text-gray-700">Đang tải...</span>
+      </div>
+    );
   }
 
   if (!user) {

@@ -1,5 +1,4 @@
-// src/utils/taskLogic.ts
-import { TaskTemplate } from '../types';
+import { TaskTemplate, TaskInstance } from '../types';
 import { db } from '../config/firebase';
 import {
   collection,
@@ -16,7 +15,6 @@ export const getLocalDateString = (date: Date): string => {
   return localDate.toISOString().split('T')[0];
 };
 
-// *** THAY ĐỔI Ở ĐÂY: Thêm 'export' ***
 export const doesTemplateMatchDate = (template: TaskTemplate, targetDate: Date): boolean => {
   const { recurrence } = template;
   const targetDateString = getLocalDateString(targetDate);
@@ -50,25 +48,31 @@ export const ensureTasksForDay = async (
     where('groupId', '==', groupId),
     where('date', '==', dateString)
   );
-
-  const existingInstances = await getDocs(instancesQuery);
-
-  // Lỗi logic cũ nằm ở đây. Nếu đã có 1 task, nó sẽ không tạo task mới.
-  // Chúng ta sẽ bỏ qua việc sửa hàm này và sửa logic ở Modal
-  if (!existingInstances.empty) {
-    return;
-  }
-
+  
   const templatesQuery = query(
     collection(db, 'groups', groupId, 'tasks')
   );
-  const templatesSnapshot = await getDocs(templatesQuery);
+
+  const [instancesSnapshot, templatesSnapshot] = await Promise.all([
+    getDocs(instancesQuery),
+    getDocs(templatesQuery)
+  ]);
+
+  const existingInstanceTemplateIds = new Set<string>();
+  instancesSnapshot.forEach((doc) => {
+    const instance = doc.data() as TaskInstance;
+    existingInstanceTemplateIds.add(instance.templateId);
+  });
+
   const templates: TaskTemplate[] = [];
   templatesSnapshot.forEach((doc) => {
     templates.push({ id: doc.id, ...doc.data() } as TaskTemplate);
   });
 
-  const matchingTemplates = templates.filter(t => doesTemplateMatchDate(t, targetDate));
+  const matchingTemplates = templates.filter(t => 
+    doesTemplateMatchDate(t, targetDate) && 
+    !existingInstanceTemplateIds.has(t.id)
+  );
 
   if (matchingTemplates.length === 0) {
     return;

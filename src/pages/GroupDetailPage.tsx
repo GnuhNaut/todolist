@@ -1,4 +1,3 @@
-// src/pages/GroupDetailPage.tsx
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -11,11 +10,11 @@ import {
   query,
   onSnapshot,
   orderBy,
-  deleteDoc, // <-- THÊM
+  deleteDoc,
 } from 'firebase/firestore';
 import TaskView from '../components/TaskView';
 import AddTemplateModal from '../components/AddTemplateModal';
-import ConfirmationModal from '../components/ConfirmationModal'; // <-- THÊM
+import ConfirmationModal from '../components/ConfirmationModal';
 
 const GroupDetailPage = () => {
   const { groupId } = useParams<{ groupId: string }>();
@@ -29,12 +28,9 @@ const GroupDetailPage = () => {
   const [view, setView] = useState<'tasks' | 'setup'>('tasks');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // === PHẦN MỚI: State cho modal xóa template ===
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [templateToDelete, setTemplateToDelete] = useState<TaskTemplate | null>(null);
-  // =============================================
 
-  // (useEffect tải group giữ nguyên)
   useEffect(() => {
     if (!user || !groupId) return;
     const groupDocRef = doc(db, 'groups', groupId);
@@ -53,10 +49,9 @@ const GroupDetailPage = () => {
     });
   }, [groupId, user, navigate]);
 
-  // (useEffect tải task templates giữ nguyên)
   useEffect(() => {
     if (!groupId) return;
-    const tasksQuery = query(collection(db, 'groups', groupId, 'tasks'), orderBy('createdAt', 'asc'));
+    const tasksQuery = query(collection(db, 'groups', groupId, 'tasks'), orderBy('startTime', 'asc'));
     const unsubscribe = onSnapshot(tasksQuery, (snapshot) => {
         const templates: TaskTemplate[] = [];
         snapshot.forEach((doc) => {
@@ -67,21 +62,16 @@ const GroupDetailPage = () => {
     return () => unsubscribe();
   }, [groupId]);
 
-  // === PHẦN MỚI: Logic Xóa Template ===
-  // Hàm mở modal
   const requestDeleteTemplate = (template: TaskTemplate) => {
     setTemplateToDelete(template);
     setIsDeleteModalOpen(true);
   };
 
-  // Hàm xác nhận xóa
   const handleConfirmDeleteTemplate = async () => {
     if (!templateToDelete || !groupId) return;
 
     try {
-      // Xóa tài liệu Task Template trong subcollection
       await deleteDoc(doc(db, 'groups', groupId, 'tasks', templateToDelete.id));
-
     } catch (error) {
       console.error("Lỗi khi xóa task template:", error);
     } finally {
@@ -89,11 +79,14 @@ const GroupDetailPage = () => {
       setTemplateToDelete(null);
     }
   };
-  // =====================================
-
 
   if (loading) {
-    return <div className="text-center p-10">Đang tải...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        <span className="ml-4 text-xl font-semibold text-gray-700">Đang tải group...</span>
+      </div>
+    );
   }
 
   if (!group) {
@@ -102,30 +95,40 @@ const GroupDetailPage = () => {
 
   const getDayName = (index: number) => ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'][index];
 
+  const formatRecurrence = (template: TaskTemplate) => {
+    const { recurrence } = template;
+    if (recurrence.type === 'daily') return 'Hằng ngày';
+    if (recurrence.type === 'once') return `Một lần (${recurrence.startDate})`;
+    if (recurrence.type === 'weekly') {
+      const days = recurrence.daysOfWeek?.map(getDayName).join(', ') || '';
+      return `Hằng tuần (vào: ${days})`;
+    }
+    return '';
+  };
+
   return (
     <>
       <div className="max-w-5xl mx-auto p-4 md:p-8">
-        {/* (Link quay lại, Tiêu đề, Tabs giữ nguyên) */}
-        <Link to="/" className="text-blue-600 hover:underline mb-4 inline-block">
-          &larr; Quay lại Dashboard
+        <Link to="/" className="text-blue-600 hover:underline mb-4 inline-block group items-center">
+          <span className="transition-transform group-hover:-translate-x-1 inline-block">&larr;</span> Quay lại Dashboard
         </Link>
         <h1 className="text-4xl font-bold text-gray-800 mb-6">{group.name}</h1>
 
         <div className="flex border-b border-gray-300 mb-6">
           <button
-            className={`py-3 px-6 font-semibold -mb-px ${
+            className={`py-3 px-6 font-semibold -mb-px transition-colors duration-200 ${
               view === 'tasks' 
-                ? 'border-b-4 border-blue-600 text-blue-600' 
+                ? 'border-b-2 border-blue-600 text-blue-600' 
                 : 'text-gray-500 hover:text-gray-700'
             }`}
             onClick={() => setView('tasks')}
           >
-            Công việc & Lịch sử
+            Công việc
           </button>
           <button
-            className={`py-3 px-6 font-semibold -mb-px ${
+            className={`py-3 px-6 font-semibold -mb-px transition-colors duration-200 ${
               view === 'setup' 
-                ? 'border-b-4 border-blue-600 text-blue-600' 
+                ? 'border-b-2 border-blue-600 text-blue-600' 
                 : 'text-gray-500 hover:text-gray-700'
             }`}
             onClick={() => setView('setup')}
@@ -138,71 +141,66 @@ const GroupDetailPage = () => {
           <TaskView groupId={groupId} />
         )}
 
-        {/* === PHẦN CẬP NHẬT: Tab Cài đặt === */}
         {view === 'setup' && (
           <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
-            {/* (Header của tab (Nút thêm) giữ nguyên) */}
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-semibold text-gray-800">Cài đặt Task Templates</h2>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
+              <div className="mb-4 sm:mb-0">
+                <h2 className="text-2xl font-semibold text-gray-800">Cài đặt Task Templates</h2>
+                <p className="text-gray-600 mt-1">
+                  Đây là nơi bạn thiết lập các công việc lặp lại.
+                </p>
+              </div>
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="px-5 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-200"
+                className="inline-flex items-center gap-2 px-5 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
               >
-                + Thêm Template mới
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+                Thêm Template mới
               </button>
             </div>
-            <p className="text-gray-600 mb-6">
-              Đây là nơi bạn thiết lập các công việc lặp lại cho group này.
-            </p>
-
-            {/* Cập nhật danh sách template */}
-            {taskTemplates.length === 0 ? (
-              <p className="text-center text-gray-500 p-6 bg-gray-50 rounded-lg">Chưa có template nào.</p>
-            ) : (
-              <div className="space-y-3">
-                {taskTemplates.map(template => (
-                  <div 
-                    key={template.id} 
-                    className="group p-4 border border-gray-200 rounded-lg bg-gray-50 flex justify-between items-center relative"
-                  >
-                    {/* Thông tin template */}
-                    <div className="flex-grow">
-                      <strong className="text-lg text-gray-800">{template.title}</strong>
-                      <div className="text-sm text-gray-500 mt-1">
-                        Lặp lại: 
-                        {template.recurrence.type === 'daily' && ' Hằng ngày'}
-                        {template.recurrence.type === 'once' && ` Một lần (${template.recurrence.startDate})`}
-                        {template.recurrence.type === 'weekly' && 
-                          ` Hằng tuần (vào: ${template.recurrence.daysOfWeek?.map(getDayName).join(', ')})`}
-                      </div>
-                    </div>
-                    {/* Thời gian */}
-                    <span className="font-mono text-gray-600 text-lg mt-2 sm:mt-0 px-4">
-                      {template.startTime} - {template.endTime}
-                    </span>
-
-                    {/* Nút Xóa Template */}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        requestDeleteTemplate(template);
-                      }}
-                      className="flex-shrink-0 p-2 text-gray-400 hover:text-red-600 rounded-full hover:bg-red-100 transition-colors"
-                      title="Xóa template"
+            
+            <div className="mt-6">
+              {taskTemplates.length === 0 ? (
+                <p className="text-center text-gray-500 p-6 bg-gray-50 rounded-lg">Chưa có template nào.</p>
+              ) : (
+                <div className="space-y-3">
+                  {taskTemplates.map(template => (
+                    <div 
+                      key={template.id} 
+                      className="group p-4 border border-gray-200 rounded-lg bg-gray-50 flex flex-col sm:flex-row justify-between sm:items-center relative"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
+                      <div className="flex-grow mb-2 sm:mb-0">
+                        <strong className="text-lg text-gray-800">{template.title}</strong>
+                        <div className="text-sm text-gray-500 mt-1">
+                          {formatRecurrence(template)}
+                        </div>
+                      </div>
+                      <span className="font-mono text-gray-700 text-lg sm:text-right sm:px-4">
+                        {template.startTime} - {template.endTime}
+                      </span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          requestDeleteTemplate(template);
+                        }}
+                        className="absolute top-3 right-3 flex-shrink-0 p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-all duration-200 opacity-0 group-hover:opacity-100 focus:opacity-100"
+                        title="Xóa template"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>
 
-      {/* Modal Thêm (giữ nguyên) */}
       {groupId && (
         <AddTemplateModal
           isOpen={isModalOpen}
@@ -211,7 +209,6 @@ const GroupDetailPage = () => {
         />
       )}
 
-      {/* === PHẦN MỚI: Modal Xóa === */}
       <ConfirmationModal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}

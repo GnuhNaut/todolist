@@ -1,11 +1,9 @@
-// src/pages/LoginPage.tsx
 import { useNavigate } from 'react-router-dom';
 import { auth, googleProvider } from '../config/firebase';
 import { signInWithPopup, setPersistence, browserLocalPersistence } from 'firebase/auth';
 import { useAuth } from '../context/AuthContext';
 import { useEffect } from 'react';
 
-// Icon Google (SVG)
 const GoogleIcon = () => (
   <svg className="w-6 h-6 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
     <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.8 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
@@ -39,7 +37,7 @@ const LoginPage = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-xl font-semibold text-gray-700">Loading...</div>
+        <div className="text-xl font-semibold text-gray-700 animate-pulse">Loading...</div>
       </div>
     );
   }
@@ -49,7 +47,6 @@ const LoginPage = () => {
   }
 
   return (
-    // Giao diện Tailwind mới
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center p-4">
       <div className="max-w-md w-full bg-white shadow-xl rounded-2xl p-8 sm:p-12 text-center">
         
@@ -62,7 +59,7 @@ const LoginPage = () => {
 
         <button 
           onClick={handleGoogleLogin}
-          className="w-full inline-flex items-center justify-center bg-white border-2 border-gray-300 rounded-lg shadow-sm px-6 py-3 text-lg font-medium text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200"
+          className="w-full inline-flex items-center justify-center bg-white border-2 border-gray-300 rounded-lg shadow-sm px-6 py-3 text-lg font-medium text-gray-700 hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 transition-all duration-200"
         >
           <GoogleIcon />
           Sign in with Google

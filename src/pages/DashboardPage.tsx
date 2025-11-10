@@ -2,7 +2,7 @@ import { auth, db } from '../config/firebase';
 import { signOut } from 'firebase/auth';
 import { useAuth } from '../context/AuthContext';
 import { useState, useEffect, FormEvent } from 'react';
-import { Group } from '../types';
+import { Group, GroupData } from '../types';
 import { Link } from 'react-router-dom';
 import {
   collection,
@@ -53,7 +53,7 @@ const DashboardPage = () => {
             const groupsQuery = query(collection(db, "groups"), where("ownerId", "==", user.uid));
             const groupsSnapshot = await getDocs(groupsQuery);
             const userGroups: Group[] = [];
-            groupsSnapshot.forEach(doc => userGroups.push({id: doc.id, ...doc.data()} as Group));
+            groupsSnapshot.forEach(doc => userGroups.push({id: doc.id, ...doc.data() as GroupData} as Group));
             
             try {
                 await Promise.all(userGroups.map(group => ensureTasksForDay(user.uid, group.id, new Date())));
@@ -73,7 +73,7 @@ const DashboardPage = () => {
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
         const groupsData: Group[] = [];
         querySnapshot.forEach((doc) => {
-            groupsData.push({ id: doc.id, ...doc.data() } as Group);
+            groupsData.push({ id: doc.id, ...doc.data() as GroupData } as Group);
         });
         setGroups(groupsData);
         setLoadingGroups(false);

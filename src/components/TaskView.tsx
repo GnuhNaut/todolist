@@ -87,7 +87,9 @@ const TaskView = ({ groupId }: TaskViewProps) => {
         <h3 className="text-lg font-semibold text-gray-700">Công việc cho ngày:</h3>
         <DatePicker
           selected={selectedDate}
-          onChange={(date: Date) => setSelectedDate(date)}
+          onChange={(date: Date | null) => {
+            if (date) setSelectedDate(date);
+          }}
           dateFormat="dd/MM/yyyy"
           className="p-2 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
         />

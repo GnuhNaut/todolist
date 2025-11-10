@@ -1,11 +1,14 @@
 import { Timestamp } from 'firebase/firestore';
 
-export interface Group {
-  id: string;
+export interface GroupData {
   name: string;
   icon?: string;
   ownerId: string;
   createdAt: Timestamp;
+}
+
+export interface Group extends GroupData {
+  id: string;
 }
 
 export interface Recurrence {

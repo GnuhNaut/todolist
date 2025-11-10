@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { db } from '../config/firebase';
-import { Group, TaskTemplate } from '../types';
+import { Group, GroupData, TaskTemplate } from '../types';
 import {
   doc,
   getDoc,
@@ -36,7 +36,7 @@ const GroupDetailPage = () => {
     const groupDocRef = doc(db, 'groups', groupId);
     getDoc(groupDocRef).then((docSnap) => {
         if (docSnap.exists()) {
-            const groupData = docSnap.data() as Group;
+            const groupData = docSnap.data() as GroupData;
             if (groupData.ownerId === user.uid) {
                 setGroup({ id: docSnap.id, ...groupData });
             } else {

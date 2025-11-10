@@ -1,7 +1,7 @@
 import { useState, FormEvent, Fragment } from 'react';
 import { db } from '../config/firebase';
 import { Recurrence, TaskTemplate } from '../types';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { Dialog, Transition } from '@headlessui/react';
 import { useAuth } from '../context/AuthContext';
 import { getLocalDateString, doesTemplateMatchDate } from '../utils/taskLogic';
@@ -71,7 +71,7 @@ const AddTemplateModal = ({ isOpen, onClose, groupId }: AddTemplateModalProps) =
         endTime: formState.endTime,
         recurrence: recurrence,
         groupId: groupId,
-        createdAt: serverTimestamp() 
+        createdAt: Timestamp.now()
       };
 
       if (doesTemplateMatchDate(newTemplate, today)) {

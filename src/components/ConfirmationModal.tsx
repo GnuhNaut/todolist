@@ -20,7 +20,6 @@ const ConfirmationModal = ({
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-20" onClose={onClose}>
-        {/* Lớp nền mờ */}
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -63,14 +62,14 @@ const ConfirmationModal = ({
                     className="inline-flex justify-center rounded-md border border-transparent bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
                     onClick={onClose}
                   >
-                    Hủy
+                    Cancel
                   </button>
                   <button
                     type="button"
                     className="inline-flex justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
                     onClick={onConfirm}
                   >
-                    Xác nhận Xóa
+                    Confirm Delete
                   </button>
                 </div>
               </Dialog.Panel>

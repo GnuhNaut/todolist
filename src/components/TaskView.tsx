@@ -37,7 +37,7 @@ const TaskView = ({ groupId }: TaskViewProps) => {
       try {
         await ensureTasksForDay(user.uid, groupId, selectedDate);
       } catch (error) {
-         console.error("Lỗi khi đảm bảo task:", error);
+         console.error("Error ensuring tasks:", error);
       }
 
       const q = query(
@@ -56,7 +56,7 @@ const TaskView = ({ groupId }: TaskViewProps) => {
         setTasks(tasksData);
         setLoading(false);
       }, (error) => {
-        console.error("Lỗi khi lắng nghe tasks:", error);
+        console.error("Error listening to tasks:", error);
         setLoading(false);
       });
     };
@@ -77,14 +77,14 @@ const TaskView = ({ groupId }: TaskViewProps) => {
         status: newStatus,
       });
     } catch (error) {
-      console.error("Lỗi khi cập nhật task:", error);
+      console.error("Error updating task:", error);
     }
   };
 
   return (
     <div className="mt-6">
       <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-6 p-4 bg-white rounded-lg shadow-sm border border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-700">Công việc cho ngày:</h3>
+        <h3 className="text-lg font-semibold text-gray-700">Tasks for the day:</h3>
         <DatePicker
           selected={selectedDate}
           onChange={(date: Date | null) => {
@@ -98,7 +98,7 @@ const TaskView = ({ groupId }: TaskViewProps) => {
       {loading && (
         <div className="text-center text-gray-500 p-6">
           <div className="w-8 h-8 border-3 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="mt-2">Đang tải tasks...</p>
+          <p className="mt-2">Loading tasks...</p>
         </div>
       )}
       
@@ -107,8 +107,8 @@ const TaskView = ({ groupId }: TaskViewProps) => {
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="w-16 h-16 mx-auto text-green-500 mb-4">
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.613 2.4-1.616 3.097m-1.616-3.097v3.097A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.768-2.09c.4A2.25 2.25 0 0 0 8.25 15h7.5a2.25 2.25 0 0 0 2.25-2.25V12c0-1.268.613-2.4 1.616-3.097A9.008 9.008 0 0 1 21 12Z" />
           </svg>
-          <p className="text-lg font-medium">Tuyệt vời!</p>
-          <p>Không có task nào cho ngày {dateString}.</p>
+          <p className="text-lg font-medium">Great!</p>
+          <p>No tasks for {dateString}.</p>
         </div>
       )}
 
@@ -116,14 +116,14 @@ const TaskView = ({ groupId }: TaskViewProps) => {
         {tasks.map((task) => (
           <div 
             key={task.id} 
-            onClick={() => handleToggleTask(task)}
-            className="flex items-center p-4 bg-white rounded-lg shadow-sm border border-gray-200 transition-all duration-200 hover:shadow-md hover:bg-gray-50 cursor-pointer"
+            className="flex items-center p-4 bg-white rounded-lg shadow-sm border border-gray-200 transition-all duration-200 hover:shadow-md hover:bg-gray-50"
           >
             <input
               type="checkbox"
               checked={task.status === 'completed'}
               readOnly
               className="h-6 w-6 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
+              onClick={() => handleToggleTask(task)}
             />
             <div className="ml-4 w-28 sm:w-32 flex-shrink-0 text-gray-600 font-medium">
               {task.startTime} - {task.endTime}

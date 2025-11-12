@@ -45,7 +45,7 @@ const AddTemplateModal = ({ isOpen, onClose, groupId }: AddTemplateModalProps) =
       recurrence = { type: 'once', startDate: formState.startDate };
     } else {
       if (formState.daysOfWeek.length === 0) {
-        alert('Vui lòng chọn ít nhất một ngày trong tuần.');
+        alert('Please select at least one day of the week.');
         return;
       }
       recurrence = { type: 'weekly', daysOfWeek: formState.daysOfWeek.sort() };
@@ -91,7 +91,7 @@ const AddTemplateModal = ({ isOpen, onClose, groupId }: AddTemplateModalProps) =
       setFormState(initialFormState);
       onClose();
     } catch (error) {
-      console.error('Lỗi khi thêm task template:', error);
+      console.error('Error adding task template:', error);
     }
   };
 
@@ -143,11 +143,11 @@ const AddTemplateModal = ({ isOpen, onClose, groupId }: AddTemplateModalProps) =
                   as="h3"
                   className="text-xl font-bold leading-6 text-gray-900"
                 >
-                  Thêm Task Template mới
+                  Add New Task Template
                 </Dialog.Title>
                 <form onSubmit={handleFormSubmit} className="mt-4 space-y-5">
                   <div>
-                    <label htmlFor="title" className="block text-sm font-medium text-gray-700">Tên Task:</label>
+                    <label htmlFor="title" className="block text-sm font-medium text-gray-700">Task Name:</label>
                     <input
                       type="text"
                       id="title"
@@ -161,28 +161,28 @@ const AddTemplateModal = ({ isOpen, onClose, groupId }: AddTemplateModalProps) =
                   
                   <div className="flex gap-4">
                     <div className="flex-1">
-                      <label htmlFor="startTime" className="block text-sm font-medium text-gray-700">Bắt đầu:</label>
+                      <label htmlFor="startTime" className="block text-sm font-medium text-gray-700">Start Time:</label>
                       <input type="time" id="startTime" name="startTime" value={formState.startTime} onChange={handleInputChange} required className="mt-1 block w-full p-2 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500" />
                     </div>
                     <div className="flex-1">
-                      <label htmlFor="endTime" className="block text-sm font-medium text-gray-700">Kết thúc:</label>
+                      <label htmlFor="endTime" className="block text-sm font-medium text-gray-700">End Time:</label>
                       <input type="time" id="endTime" name="endTime" value={formState.endTime} onChange={handleInputChange} required className="mt-1 block w-full p-2 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500" />
                     </div>
                   </div>
 
                   <div>
-                    <label htmlFor="recurrenceType" className="block text-sm font-medium text-gray-700">Tùy chọn lặp lại:</label>
+                    <label htmlFor="recurrenceType" className="block text-sm font-medium text-gray-700">Recurrence Option:</label>
                     <select id="recurrenceType" name="recurrenceType" value={formState.recurrenceType} onChange={handleInputChange} className="mt-1 block w-full p-2 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                      <option value="daily">Hằng ngày</option>
-                      <option value="weekly">Hằng tuần</option>
-                      <option value="once">Chỉ một lần</option>
+                      <option value="daily">Daily</option>
+                      <option value="weekly">Weekly</option>
+                      <option value="once">Once</option>
                     </select>
                   </div>
 
                   {formState.recurrenceType === 'weekly' && (
                     <div className="flex flex-wrap gap-2 items-center">
-                      <span className="text-sm font-medium text-gray-700 mr-2">Chọn ngày:</span>
-                      {['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'].map((day, index) => (
+                      <span className="text-sm font-medium text-gray-700 mr-2">Select Days:</span>
+                      {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, index) => (
                         <button
                           type="button"
                           key={index}
@@ -201,7 +201,7 @@ const AddTemplateModal = ({ isOpen, onClose, groupId }: AddTemplateModalProps) =
 
                   {formState.recurrenceType === 'once' && (
                     <div>
-                      <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">Chọn ngày:</label>
+                      <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">Select Date:</label>
                       <input type="date" id="startDate" name="startDate" value={formState.startDate} onChange={handleInputChange} required className="mt-1 block w-full p-2 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500" />
                     </div>
                   )}
@@ -212,13 +212,13 @@ const AddTemplateModal = ({ isOpen, onClose, groupId }: AddTemplateModalProps) =
                       className="inline-flex justify-center rounded-md border border-transparent bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500"
                       onClick={onClose}
                     >
-                      Hủy
+                      Cancel
                     </button>
                     <button
                       type="submit"
                       className="inline-flex justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                     >
-                      Thêm Task
+                      Add Task
                     </button>
                   </div>
                 </form>

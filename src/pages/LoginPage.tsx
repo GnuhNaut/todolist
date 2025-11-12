@@ -30,7 +30,7 @@ const LoginPage = () => {
       await signInWithPopup(auth, googleProvider);
       navigate('/');
     } catch (error) {
-      console.error("Lỗi khi đăng nhập Google:", error);
+      console.error("Error logging in with Google:", error);
     }
   };
 
@@ -51,10 +51,10 @@ const LoginPage = () => {
       <div className="max-w-md w-full bg-white shadow-xl rounded-2xl p-8 sm:p-12 text-center">
         
         <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">
-          Welcome to <span className="text-blue-600">my-todolist</span>
+          Welcome to <span className="text-blue-600">To-do List - Just Say Easy</span>
         </h1>
         <p className="text-gray-600 mb-10 text-lg">
-          Quản lý công việc hàng ngày của bạn một cách hiệu quả.
+          Manage your daily tasks efficiently.
         </p>
 
         <button 

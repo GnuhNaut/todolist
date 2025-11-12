@@ -58,7 +58,7 @@ const DashboardPage = () => {
             try {
                 await Promise.all(userGroups.map(group => ensureTasksForDay(user.uid, group.id, new Date())));
             } catch (error) {
-                console.error("Lỗi khi sinh task hàng loạt:", error);
+                console.error("Error generating tasks in bulk:", error);
             }
             await updateDoc(userDocRef, { lastTasksGeneratedForDate: todayString });
         }
@@ -93,7 +93,7 @@ const DashboardPage = () => {
         });
         setNewGroupName("");
     } catch (error) {
-        console.error("Lỗi khi tạo group:", error);
+        console.error("Error creating group:", error);
     }
   };
 
@@ -101,7 +101,7 @@ const DashboardPage = () => {
     try {
         await signOut(auth);
     } catch (error) {
-        console.error("Lỗi khi đăng xuất:", error);
+        console.error("Error logging out:", error);
     }
   };
 
@@ -137,7 +137,7 @@ const DashboardPage = () => {
       await batch.commit();
 
     } catch (error) {
-      console.error("Lỗi khi xóa group và các task liên quan:", error);
+      console.error("Error deleting group and related tasks:", error);
     } finally {
       setIsDeleteModalOpen(false);
       setGroupToDelete(null);
@@ -151,7 +151,7 @@ const DashboardPage = () => {
             <div>
                 <h1 className="text-4xl font-bold text-gray-800">My Todo Groups</h1>
                 <p className="mt-2 text-lg text-gray-600">
-                    Chào mừng, {user?.displayName || user?.email}!
+                    Welcome, {user?.displayName || user?.email}!
                 </p>
             </div>
             <button 
@@ -161,7 +161,7 @@ const DashboardPage = () => {
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H21" />
               </svg>
-              Đăng xuất
+              Logout
             </button>
         </header>
 
@@ -169,13 +169,13 @@ const DashboardPage = () => {
             className="mb-10 p-6 bg-white rounded-lg shadow-sm border border-gray-200"
             onSubmit={handleCreateGroup}
         >
-            <h2 className="text-xl font-semibold mb-4 text-gray-700">Tạo một Group mới</h2>
+            <h2 className="text-xl font-semibold mb-4 text-gray-700">Create a New Group</h2>
             <div className="flex">
                 <input
                     type="text"
                     value={newGroupName}
                     onChange={(e) => setNewGroupName(e.target.value)}
-                    placeholder="Tên Group mới (ví dụ: Việc nhà, Công ty...)"
+                    placeholder="New Group Name (e.g., Home, Work...)"
                     className="flex-grow p-3 border-gray-300 rounded-l-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 />
                 <button 
@@ -185,23 +185,23 @@ const DashboardPage = () => {
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
-                    Tạo
+                    Create
                 </button>
             </div>
         </form>
 
         <div className="mt-6">
           {loadingGroups ? (
-            <p className="text-center text-gray-500">Đang tải groups...</p>
+            <p className="text-center text-gray-500">Loading groups...</p>
           ) : groups.length === 0 ? (
             <div className="text-center text-gray-500 p-8 bg-gray-50 rounded-lg shadow-inner border border-gray-200">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="w-16 h-16 mx-auto text-gray-400 mb-4">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 12.75h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 0 1 0 3.75H5.625a1.875 1.875 0 0 1 0-3.75Z" />
               </svg>
               <p className="text-lg">
-                Bạn chưa có group nào.
+                You don't have any groups yet.
               </p>
-              <p>Hãy tạo group đầu tiên ở bên trên!</p>
+              <p>Create your first group above!</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -236,10 +236,10 @@ const DashboardPage = () => {
                         requestDeleteGroup(group);
                       }}
                       className="absolute top-3 right-3 p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
-                      title="Xóa group"
+                      title="Delete group"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 1 0 00-1 1v3M4 7h16" />
                       </svg>
                     </button>
                   </div>
@@ -254,8 +254,8 @@ const DashboardPage = () => {
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleConfirmDeleteGroup}
-        title="Xác nhận Xóa Group"
-        message={`Bạn có chắc chắn muốn xóa group "${groupToDelete?.name}"? Tất cả các task templates và lịch sử công việc liên quan cũng sẽ bị xóa vĩnh viễn.`}
+        title="Confirm Delete Group"
+        message={`Are you sure you want to delete the group "${groupToDelete?.name}"? All related task templates and history will be permanently deleted.`}
       />
     </>
   );
